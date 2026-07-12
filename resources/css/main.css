@@ -1,0 +1,183 @@
+@import url('variables.css');
+
+* { box-sizing: border-box; }
+
+html, body {
+    height: 100%;
+}
+
+body {
+    font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    background: var(--background-color);
+    color: var(--text-color);
+    margin: 0;
+}
+
+/* Layout */
+.container{
+    width: min(1100px, 92%);
+    margin: 0 auto;
+}
+
+.main{
+    padding: 20px 0 40px;
+}
+
+/* Header */
+.header{
+    background: var(--primary-color);
+    color: #fff;
+}
+
+.header__inner{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 0;
+}
+
+.brand{
+    color: #fff;
+    text-decoration: none;
+    display: grid;
+    gap: 2px;
+}
+
+.brand__title{
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: .2px;
+}
+
+.brand__sub{
+    font-size: 12px;
+    opacity: .9;
+}
+
+/* Nav */
+.nav{
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.nav__link{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #fff;
+    background-color: var(--primary-color);
+
+    text-decoration: none;
+    font-weight: 600;
+
+    padding: 10px 16px;
+    border-radius: var(--radius);
+
+    transition: background-color .2s ease, transform .1s ease;
+}
+
+.nav__link:hover{
+    background-color: #a66d00; /* أغمق قليلا من primary */
+    transform: translateY(-1px);
+}
+
+/* زر أساسي واضح (للأزرار داخل الفورم) */
+.btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 12px 18px;
+  border-radius: var(--radius);
+  border: 0;
+
+  background: var(--primary-color);
+  color: #fff;
+
+  font-weight: 700;
+  cursor: pointer;
+
+  box-shadow: var(--shadow);
+  min-width: 160px;
+}
+
+.btn:hover{
+  filter: brightness(0.95);
+}
+
+.btn:active{
+  transform: translateY(1px);
+}
+
+/* Typography helpers */
+.page-title{
+    margin: 0 0 10px;
+    font-size: 26px;
+}
+
+.page-subtitle{
+    margin: 0 0 18px;
+    opacity: .85;
+}
+
+/* Grid + Cards */
+.grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+}
+
+.card{
+    display: block;
+    border: 1px solid rgba(0,0,0,.08);
+    background: #fff;
+    border-radius: 16px;
+    padding: 14px;
+    text-decoration: none;
+    color: inherit;
+    transition: transform .08s ease, box-shadow .08s ease;
+}
+
+.card:hover{
+    transform: translateY(-1px);
+    box-shadow: 0 10px 26px rgba(0,0,0,.08);
+}
+
+.card__title{
+    margin: 0 0 6px;
+    font-weight: 800;
+    font-size: 18px;
+}
+
+.card__desc{
+    margin: 0 0 10px;
+    opacity: .85;
+    line-height: 1.5;
+}
+
+.card__price{
+    font-weight: 800;
+    color: var(--primary-color);
+}
+
+/* Footer */
+.footer{
+    background: var(--secondary-color);
+    color: #fff;
+}
+
+.footer__inner{
+    padding: 14px 0;
+}
+
+.footer__text{
+    margin: 0;
+    opacity: .95;
+}
+
+/* RTL tweaks (optional small) */
+body[dir="rtl"] .nav{
+    justify-content: flex-start;
+}

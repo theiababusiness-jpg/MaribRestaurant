@@ -1,0 +1,16 @@
+User-agent: *
+
+# منع لوحة الإدارة
+Disallow: /admin
+
+# منع صفحات الدفع التقنية
+Disallow: /payments/
+
+# منع csrf endpoint
+Disallow: /checkout/csrf-token
+
+# السماح بباقي الموقع
+Allow: /
+
+# Sitemap
+Sitemap: https://marbrestaurant.com/sitemap.xml

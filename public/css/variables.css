@@ -1,0 +1,47 @@
+:root{
+  --primary-color:#7A3E78;
+  --secondary-color:#b05800;
+  --background-color:#FFFFFF;
+  --text-color:#333333;
+
+  /* UI tokens */
+  --radius:16px;
+  --radius-sm:10px;
+  --shadow:0 10px 26px rgba(0,0,0,.08);
+
+  --space-1:8px;
+  --space-2:12px;
+  --space-3:16px;
+  --space-4:20px;
+
+  --container:1100px;
+
+   /* اللون الأساسي من الشعار */
+  --brand: #7A3E78;          /* بنفسجي مأرب */
+  --brand-soft: #9B5C98;
+  --brand-dark: #5A2A57;
+
+  /* Light Mode */
+  --bg: #ffffff;
+  --bg-soft: #f6f6f6;
+  --card: #ffffff;
+  --text: #1c1c1c;
+  --text-muted: #666;
+  --border: rgba(0,0,0,.08);
+
+  /* Buttons */
+  --btn-bg: var(--brand);
+  --btn-text: #ffffff;
+}
+body.dark {
+  --bg: #0f0f11;
+  --bg-soft: #16161a;
+  --card: #1c1c21;
+  --text: #f3f3f3;
+  --text-muted: #b6b6b6;
+  --border: rgba(255,255,255,.08);
+
+  --btn-bg: var(--brand-soft);
+  --btn-text: #ffffff;
+}
+

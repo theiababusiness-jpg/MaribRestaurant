@@ -1,0 +1,18 @@
+:root{
+  --primary-color:#C07F00;
+  --secondary-color:#5a025a;
+  --background-color:#FFFFFF;
+  --text-color:#333333;
+
+  /* UI tokens */
+  --radius:16px;
+  --radius-sm:10px;
+  --shadow:0 10px 26px rgba(0,0,0,.08);
+
+  --space-1:8px;
+  --space-2:12px;
+  --space-3:16px;
+  --space-4:20px;
+
+  --container:1100px;
+}

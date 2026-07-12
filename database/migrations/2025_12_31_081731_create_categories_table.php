@@ -1,0 +1,44 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+{
+    Schema::create('categories', function (Blueprint $table) {
+        $table->id();
+
+        // اسم التصنيف (العربي)
+        $table->string('name');
+
+        // وصف اختياري
+        $table->text('description')->nullable();
+
+        // رابط SEO مثل: main-dishes
+        $table->string('slug')->unique();
+
+        // اظهار/اخفاء التصنيف بدون حذف
+        $table->boolean('is_active')->default(1);
+
+        // ترتيب يدوي للعرض
+        $table->unsignedInteger('sort_order')->default(0);
+
+        $table->timestamps();
+    });
+}
+
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('categories');
+    }
+};

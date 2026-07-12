@@ -1,0 +1,330 @@
+/* =========================================
+   Admin UI (لوحة الإدارة)
+   ========================================= */
+
+/* منع تمدد أفقي مزعج بالجوال */
+html, body{
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* body: إعدادات عامة للصفحة */
+body{
+  background: var(--background-color);
+  color: var(--text-color);
+  font-family: sans-serif;
+  margin: 0;
+}
+
+/* container: موجود للاستخدام العام في صفحات الإدارة (بدون max-width هنا حتى ما يسبب تضارب) */
+.container{
+  padding: 0 14px;
+  margin: 0 auto;
+}
+
+
+/* card: صندوق جميل للأقسام */
+.card{
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.04);
+}
+
+/* عناوين */
+.page-title{
+  font-size: 22px;
+  margin: 0 0 6px;
+}
+.page-subtitle{
+  opacity: .75;
+  margin: 0;
+}
+
+/* label: تسمية الحقل */
+.label{
+  display: block;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+/* input/textarea: شكل الحقول */
+.input{
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,.12);
+  outline: none;
+  background: #fff;
+}
+
+/* btn: زر أساسي */
+.btn{
+  background: var(--primary-color);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 14px;
+  display: inline-block;
+  text-decoration: none;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+}
+
+/* زر خفيف */
+.btn--ghost{
+  background: rgba(0,0,0,.06);
+  color: var(--text-color);
+}
+
+/* زر صغير */
+.btn--small{
+  padding: 8px 10px;
+  border-radius: 12px;
+  font-weight: 800;
+}
+
+/* table: جدول الإدارة */
+.table{
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* خلايا الجدول */
+.table th, .table td{
+  padding: 10px;
+  border-bottom: 1px solid rgba(0,0,0,.08);
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* لفّ الجدول داخل Scroll بالجوال */
+.table-wrap{
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* badge: شارة الحالة */
+.badge{
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+/* مفعل */
+.badge--ok{
+  background: rgba(0,128,0,.12);
+  color: #0b6b0b;
+}
+
+/* غير مفعل */
+.badge--off{
+  background: rgba(176,0,32,.12);
+  color: #b00020;
+}
+
+/* alert: رسائل */
+.alert{
+  padding: 12px 14px;
+  border-radius: 14px;
+  margin-top: 12px;
+  font-weight: 800;
+}
+
+/* نجاح */
+.alert--success{
+  background: rgba(0,128,0,.10);
+  color: #0b6b0b;
+}
+
+/* خطأ */
+.alert--danger{
+  background: rgba(176,0,32,.10);
+  color: #b00020;
+}
+
+/* =========================================
+   Dashboard (لوحة التحكم فقط) - Responsive
+   ملاحظة: لا يلمس card / btn / container العامة
+   ========================================= */
+
+.dashboard-wrap{
+  width: 100%;
+  max-width: 1100px;
+  margin: 20px auto;
+  padding: 0 14px;
+}
+
+/* شبكة الكروت */
+.dashboard-grid{
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* كرت الإحصائية */
+.dashboard-card{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.dashboard-card:hover{
+  transform: translateY(-3px);
+  box-shadow: 0 14px 35px rgba(0,0,0,.08);
+}
+
+.dashboard-card .stat-title{
+  font-weight: 800;
+  font-size: 14px;
+  opacity: .85;
+}
+
+.dashboard-card .stat-value{
+  font-weight: 900;
+  font-size: 20px;
+}
+
+/* Tablet */
+@media (max-width: 900px){
+  .dashboard-grid{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Mobile */
+@media (max-width: 520px){
+  .dashboard-wrap{
+    margin-top: 12px;
+  }
+
+  .dashboard-grid{
+    grid-template-columns: 1fr;
+  }
+
+  .page-title{
+    font-size: 18px;
+  }
+
+  .card{
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  /* أزرار الإدارة تصير Full width في الجوال */
+  .btn{
+    width: 100%;
+    text-align: center;
+  }
+
+  .dashboard-card .stat-value{
+    font-size: 22px;
+  }
+}
+
+/* =========================================
+   Orders Responsive (Admin)
+   ========================================= */
+
+/* جداول الإدارة في الجوال: سكرول أفقي بدل ما تكسر التصميم */
+@media (max-width: 768px){
+  .table-wrap{
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .table{
+    min-width: 760px;
+  }
+}
+
+/* صفحة عرض الطلب: نخلي الهيدر مرن */
+@media (max-width: 768px){
+  .order-header{
+    display:flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .order-header .btn{
+    width:100%;
+    text-align:center;
+  }
+}
+
+/* بطاقات المعلومات في عرض الطلب: عمود واحد في الجوال */
+@media (max-width: 768px){
+  .order-grid{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+/* إصلاح خروج الحقول من الكروت */
+.card .input,
+.card input,
+.card textarea,
+.card select {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.admin-card{
+  margin-left: 1rem;
+}
+
+/*صندوق اختيار الرسالة الخاصة بالمتجات الغير معروضة */
+.toggle-switch{
+position:relative;
+display:inline-block;
+width:52px;
+height:26px;
+}
+
+.toggle-switch input{
+opacity:0;
+width:0;
+height:0;
+}
+
+.toggle-slider{
+position:absolute;
+cursor:pointer;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:#ccc;
+transition:.3s;
+border-radius:20px;
+}
+
+.toggle-slider:before{
+position:absolute;
+content:"";
+height:20px;
+width:20px;
+left:3px;
+bottom:3px;
+background:white;
+transition:.3s;
+border-radius:50%;
+}
+
+.toggle-switch input:checked + .toggle-slider{
+background:var(--primary-color);
+}
+
+.toggle-switch input:checked + .toggle-slider:before{
+transform:translateX(26px);
+}
+/* نهاية صندوق اختيار الرسالة الخاصة بالمتجات الغير معروضة */
+
