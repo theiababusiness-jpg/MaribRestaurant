@@ -9,6 +9,7 @@
 <h2 class="page-title dark-text">
     {{ FrontLang::t('المنيو', 'Menu') }}
 </h2>
+<h1>تجربة الرفع التلقائي</h1>
 
 {{-- 
     المنطق:
