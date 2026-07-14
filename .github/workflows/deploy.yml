@@ -25,7 +25,5 @@ jobs:
             php artisan config:cache
 
             php artisan route:cache
-
             php artisan view:cache
-
-            rsync -av --delete public/ ../public_html/
+            rsync -av --delete --exclude=images public/ ../public_html/
