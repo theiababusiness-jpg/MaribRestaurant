@@ -19,7 +19,13 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             cd /home/u384149813/domains/marbrestaurant.com/laravel-app
-            pwd
-            whoami
-            git status
-          
+            git pull origin main
+            composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
+            php artisan optimize:clear
+            php artisan config:cache
+
+            php artisan route:cache
+
+            php artisan view:cache
+
+            rsync -av --delete public/ ../public_html/
