@@ -27,4 +27,8 @@ jobs:
             php artisan optimize:clear
             php artisan optimize
 
-            rsync -av --delete --exclude=images public/ ../public_html/
+            rsync -av --delete \
+              --exclude=images \
+              --exclude=index.php \
+              --exclude=.htaccess \
+              public/ ../public_html/
