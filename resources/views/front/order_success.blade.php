@@ -75,10 +75,10 @@
         $waText .= "\n*ملاحظات:* " . $order->notes . "\n";
     }
     
-    $waPhone = "967738637775";
+    $waPhone = "966573982778";
     $whatsappUrl = "https://api.whatsapp.com/send?phone=" . $waPhone . "&text=" . rawurlencode($waText);
 
-    $callPhone = $order->branch?->phone ?: ($siteSettings?->support_phone ?? '967738637775');
+    $callPhone = $order->branch?->phone ?: ($siteSettings?->support_phone ?? '966573982778');
     $telLink = 'tel:' . preg_replace('/\s+/', '', $callPhone);
 @endphp
 
