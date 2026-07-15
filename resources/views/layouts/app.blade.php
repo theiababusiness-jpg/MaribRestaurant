@@ -73,12 +73,13 @@
     <div class="container">
         <div class="header-desktop">
             <nav class="nav">
-                <div style="margin-inline-start:10px;">
+                <div style="margin-inline-start:10px; display:flex; gap:8px; align-items:center;">
                     @if($frontLang === 'ar')
                         <a class="nav__link" href="{{ route('front.lang', 'en') }}">EN</a>
                     @else
                         <a class="nav__link" href="{{ route('front.lang', 'ar') }}">AR</a>
                     @endif
+                    <button class="nav__link theme-toggle" type="button" style="border: none; cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; justify-content: center; padding: 8px 12px; line-height: 1;">☾</button>
                 </div>
 
                 <a class="nav__link" href="{{ route('home') }}">{{ FrontLang::t('الرئيسية', 'Home') }}</a>
@@ -90,8 +91,8 @@
         </div>
 
         <div class="header-mobile" style="justify-content: space-between;">
-            <div>
-                <button id="themeToggle" class="btn btn--ghos" type="button">☾</button>
+            <div style="display:flex; gap:8px; align-items:center;">
+                <button id="themeToggle" class="theme-toggle nav__link" type="button" style="border: none; cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; justify-content: center; padding: 8px 12px; line-height: 1;">☾</button>
                 <a href="{{ route('cart.index') }}" class="nav__link cart-link" title="{{ FrontLang::t('السلة', 'Cart') }}">
                     🛒
                     @if(session('cart') && count(session('cart')) > 0)
@@ -215,7 +216,6 @@
 <script>
     (function () {
         const flash = document.getElementById('flashMessage');
-        const themeToggle = document.getElementById('themeToggle');
 
         if (flash) {
             setTimeout(() => {
@@ -226,16 +226,27 @@
         }
 
         const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
+        const isDark = savedTheme === 'dark';
+        if (isDark) {
             document.body.classList.add('dark');
         }
 
-        themeToggle?.addEventListener('click', () => {
-            document.body.classList.toggle('dark');
-            localStorage.setItem(
-                'theme',
-                document.body.classList.contains('dark') ? 'dark' : 'light'
-            );
+        const themeToggles = document.querySelectorAll('.theme-toggle');
+        // Set initial icon based on theme
+        themeToggles.forEach(toggle => {
+            toggle.textContent = isDark ? '☀️' : '☾';
+        });
+
+        themeToggles.forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark');
+                const darkNow = document.body.classList.contains('dark');
+                localStorage.setItem('theme', darkNow ? 'dark' : 'light');
+                
+                themeToggles.forEach(t => {
+                    t.textContent = darkNow ? '☀️' : '☾';
+                });
+            });
         });
     })();
 
