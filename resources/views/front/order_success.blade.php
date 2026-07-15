@@ -13,6 +13,73 @@
         'cash' => FrontLang::t('كاش', 'Cash'),
         'online' => FrontLang::t('دفع إلكتروني', 'Online payment'),
     ];
+
+    // Construct WhatsApp message
+    $waText = "*طلب جديد من مطعم مأرب*\n";
+    $waText .= "--------------------------------\n";
+    $waText .= "*رقم الطلب:* " . $order->code . "\n";
+    $waText .= "*الاسم:* " . $order->customer_name . "\n";
+    $waText .= "*الهاتف:* " . $order->customer_phone . "\n";
+    
+    $fullMethod = $fulfillmentLabels[$order->fulfillment_method] ?? $order->fulfillment_method;
+    $waText .= "*طريقة الاستلام:* " . $fullMethod . "\n";
+    
+    if ($order->branch) {
+        $waText .= "*الفرع:* " . $order->branch->name . "\n";
+    }
+    
+    $waText .= "*طريقة الدفع:* " . ($paymentMethodLabels[$order->payment_method] ?? $order->payment_method) . "\n";
+    
+    $waText .= "\n*الطلبات:*\n";
+    foreach ($order->items as $item) {
+        $waText .= "- " . $item->qty . " × " . $item->product_name . " (" . number_format((float) $item->unit_price, 2) . " ريال)";
+        $options = is_string($item->options_json) ? json_decode($item->options_json, true) : ($item->options_json ?? []);
+        $options = is_array($options) ? $options : [];
+        if (!empty($options)) {
+            $optNames = [];
+            foreach ($options as $opt) {
+                if (is_array($opt)) {
+                    $name = $opt['name'] ?? '';
+                    if (isset($opt['price']) && $opt['price'] > 0) {
+                        $name .= " (+" . number_format((float) $opt['price'], 2) . " ريال)";
+                    }
+                    $optNames[] = $name;
+                } else {
+                    $optNames[] = $opt;
+                }
+            }
+            $waText .= " [خيار: " . implode(', ', $optNames) . "]";
+        }
+        $waText .= "\n";
+    }
+    
+    $waText .= "\n*الحساب:*\n";
+    $waText .= "- الإجمالي: " . number_format((float) $order->items_subtotal, 2) . " ريال\n";
+    if ($order->fulfillment_method === 'delivery') {
+        $waText .= "- رسوم التوصيل: " . number_format((float) $order->delivery_fee, 2) . " ريال\n";
+    }
+    $waText .= "*الإجمالي النهائي:* " . number_format((float) $order->total, 2) . " ريال\n";
+    
+    if ($order->fulfillment_method === 'delivery') {
+        $waText .= "\n*تفاصيل التوصيل:*\n";
+        $waText .= "*العنوان:* " . ($order->customer_address ?: 'غير محدد') . "\n";
+        if ($order->map_address) {
+            $waText .= "*الوصف:* " . $order->map_address . "\n";
+        }
+        if ($hasMap) {
+            $waText .= "*موقع التوصيل (خرائط جوجل):* " . $mapUrl . "\n";
+        }
+    }
+    
+    if ($order->notes) {
+        $waText .= "\n*ملاحظات:* " . $order->notes . "\n";
+    }
+    
+    $waPhone = "967738637775";
+    $whatsappUrl = "https://api.whatsapp.com/send?phone=" . $waPhone . "&text=" . rawurlencode($waText);
+
+    $callPhone = $order->branch?->phone ?: ($siteSettings?->support_phone ?? '967738637775');
+    $telLink = 'tel:' . preg_replace('/\s+/', '', $callPhone);
 @endphp
 
 @section('content')
@@ -22,6 +89,20 @@
         {{ FrontLang::t('رقم الطلب', 'Order Number') }}:
         <strong>{{ $order->code }}</strong>
     </p>
+
+    <div class="card dark-card" style="margin-top:14px; background: rgba(37, 211, 102, 0.05); border: 1px solid rgba(37, 211, 102, 0.2); text-align: center;">
+        <h3 class="card__title dark-text" style="font-size:16px; margin-bottom:12px;">
+            {{ FrontLang::t('لتسريع تجهيز الطلب، تواصل معنا:', 'To expedite your order, contact us:') }}
+        </h3>
+        <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+            <a class="btn" href="{{ $whatsappUrl }}" style="background:#25D366; color:#fff; display:inline-flex; align-items:center; gap:8px; padding:10px 18px; font-size:15px; border-radius:12px; text-decoration:none; font-weight:bold;">
+                💬 {{ FrontLang::t('تواصل عبر واتساب', 'WhatsApp') }}
+            </a>
+            <a class="btn" href="{{ $telLink }}" style="background:#007bff; color:#fff; display:inline-flex; align-items:center; gap:8px; padding:10px 18px; font-size:15px; border-radius:12px; text-decoration:none; font-weight:bold;">
+                📞 {{ FrontLang::t('اتصال هاتفي', 'Call Us') }}
+            </a>
+        </div>
+    </div>
 
     <div class="card dark-card" style="margin-top:14px;">
         <h3 class="card__title dark-text">{{ FrontLang::t('ملخص الطلب', 'Order Summary') }}</h3>
@@ -120,4 +201,15 @@
         @endif
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const orderCode = "{{ $order->code }}";
+        const storageKey = "wa_redirected_" + orderCode;
+        if (!sessionStorage.getItem(storageKey)) {
+            sessionStorage.setItem(storageKey, "true");
+            window.location.href = "{!! $whatsappUrl !!}";
+        }
+    });
+</script>
 @endsection
