@@ -146,8 +146,8 @@ class SitemapController extends Controller
             ->concat($categoryUrls)
             ->concat($productUrls);
 
-        return response()
-            ->view('sitemap.xml', compact('urls'))
-            ->header('Content-Type', 'application/xml');
+        return response(
+            view()->file(resource_path('views/sitemap.xml.blade.php'), compact('urls'))->render()
+        )->header('Content-Type', 'application/xml');
     }
 }

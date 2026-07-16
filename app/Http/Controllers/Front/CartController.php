@@ -14,25 +14,11 @@ class CartController extends Controller
     public function index()
     {
         $cart = session()->get('cart', []);
+        if (empty($cart)) {
+            return redirect()->route('home');
+        }
+
         $total = collect($cart)->sum(fn ($item) => (float) ($item['final_price'] ?? 0));
-
-        $cartProductIds = collect($cart)->pluck('product_id')->filter()->unique()->all();
-        $categoryIds = Product::query()
-            ->whereIn('id', $cartProductIds)
-            ->pluck('category_id')
-            ->filter()
-            ->unique()
-            ->all();
-
-        $suggested = Product::query()
-            ->with('optionGroups.options')
-            ->where('is_active', 1)
-            ->when(! empty($cartProductIds), fn ($query) => $query->whereNotIn('id', $cartProductIds))
-            ->when(! empty($categoryIds), fn ($query) => $query->whereIn('category_id', $categoryIds))
-            ->orderBy('sort_order')
-            ->orderByDesc('id')
-            ->take(6)
-            ->get();
 
         $seo = SeoData::make([
             'title' => FrontLang::t('السلة | مطاعم مأرب', 'Cart | Marib Restaurant'),
@@ -40,7 +26,7 @@ class CartController extends Controller
             'robots' => 'noindex,nofollow',
         ]);
 
-        return view('front.cart', compact('cart', 'total', 'suggested', 'seo'));
+        return view('front.cart', compact('cart', 'total', 'seo'));
     }
 
     public function add(Request $request)

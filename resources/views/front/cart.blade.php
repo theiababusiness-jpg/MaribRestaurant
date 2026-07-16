@@ -130,63 +130,7 @@
         </div>
     </div>
 
-    {{-- اقتراحات (قد يعجبك أيضا) --}}
-    @if(isset($suggested) && $suggested->count() > 0)
-        <div class="card dark-card" style="margin-top:14px;">
-            <h3 class="card__title dark-text">
-                {{ FrontLang::t('قد يعجبك أيضا', 'You May Also Like') }}
-            </h3>
 
-            <div class="grid" style="margin-top:12px;">
-                @foreach($suggested as $p)
-                    <div class="card dark-card" style="padding:14px;">
-                        <h4 class="card__title dark-text" style="margin:0 0 6px 0;">
-                            {{ FrontLang::db($p->name, $p->name_en ?? null) }}
-                        </h4>
-                        
-                            
-                            <div class="card__price dark-text">
-
-@if($p->price > 0)
-
-    {{ number_format((float)$p->price, 0) }} {{ FrontLang::t('ريال', 'SAR') }}
-
-@elseif(!$p->has_special_message && $p->optionGroups->count() && $p->optionGroups->first()->options->count())
-
-    {{ number_format((float)$p->optionGroups->first()->options->first()->price_delta, 0) }}
-    {{ FrontLang::t('ريال', 'SAR') }}
-
-@else
-
-    {{ FrontLang::t('السعر عند الطلب', 'Ask cashier') }}
-
-@endif
-
-</div>
-                            
-
-                        {{-- إضافة سريعة بدون تخصيصات --}}
-                        <form action="{{ route('cart.add') }}" method="POST" style="margin-top:10px;">
-                            @csrf
-                            <input type="hidden" name="product_id" value="{{ $p->id }}">
-                            <input type="hidden" name="final_price" value="{{ $p->price }}">
-                            <input type="hidden" name="qty" value="1">
-
-                            <button type="submit" class="btn dark-btn" style="min-width:auto; padding:10px 14px;">
-                                {{ FrontLang::t('إضافة سريع', 'Quick Add') }}
-                            </button>
-                        </form>
-
-                        <div style="margin-top:10px;">
-                            <a class="btn btn--ghost dark-btn-ghost" href="{{ route('product.show', $p) }}">
-                                {{ FrontLang::t('عرض التفاصيل', 'View Details') }}
-                            </a>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    @endif
 
 @endif
 @endsection
