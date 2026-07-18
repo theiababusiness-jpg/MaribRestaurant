@@ -1,5 +1,4 @@
 <?php
-
 use App\Http\Controllers\Admin\AdminSettingsController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\BannerController;
@@ -22,7 +21,6 @@ use App\Http\Controllers\Front\PaymentController;
 use App\Http\Controllers\Front\ProductController;
 use App\Http\Controllers\Front\SitemapController;
 use Illuminate\Support\Facades\Route;
-
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/menu', [MenuController::class, 'index'])->name('menu.index');
 Route::get('/menu/{category:slug}', [MenuController::class, 'show'])->name('menu.category');
