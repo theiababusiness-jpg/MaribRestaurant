@@ -60,6 +60,8 @@ class ImageProcessingService
             throw new RuntimeException('Image processing completed, but the output file was not created.');
         }
 
+        @chmod($absolutePath, 0644);
+
         return $relativePath;
     }
 
@@ -132,6 +134,7 @@ class ImageProcessingService
     {
         if (! File::exists($directory)) {
             File::makeDirectory($directory, 0755, true);
+            @chmod($directory, 0755);
         }
     }
 
