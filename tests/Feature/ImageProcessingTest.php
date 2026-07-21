@@ -84,6 +84,56 @@ class ImageProcessingTest extends TestCase
         $this->assertSame(933, $height);
     }
 
+    public function test_imagick_processor_converts_correctly_if_supported(): void
+    {
+        $processor = new \App\Services\Images\Processors\ImagickProcessor();
+        if (!$processor->isSupported()) {
+            $this->markTestSkipped('Imagick is not supported in this environment.');
+        }
+
+        $sourcePath = $this->createSourceImage(2000, 1000, 'jpeg');
+        $outputPath = storage_path('framework/testing/img-' . uniqid() . '.webp');
+        $this->trackTemporaryPath($outputPath);
+
+        $processor->process($sourcePath, $outputPath, [
+            'max_width' => 1400,
+            'max_height' => 1400,
+            'quality' => 82,
+        ]);
+
+        $this->assertFileExists($outputPath);
+        $this->assertSame('image/webp', mime_content_type($outputPath));
+
+        [$width, $height] = getimagesize($outputPath);
+        $this->assertSame(1400, $width);
+        $this->assertSame(700, $height);
+    }
+
+    public function test_gd_processor_converts_correctly_if_supported(): void
+    {
+        $processor = new \App\Services\Images\Processors\GdProcessor();
+        if (!$processor->isSupported()) {
+            $this->markTestSkipped('GD is not supported in this environment.');
+        }
+
+        $sourcePath = $this->createSourceImage(2000, 1000, 'jpeg');
+        $outputPath = storage_path('framework/testing/img-' . uniqid() . '.webp');
+        $this->trackTemporaryPath($outputPath);
+
+        $processor->process($sourcePath, $outputPath, [
+            'max_width' => 1400,
+            'max_height' => 1400,
+            'quality' => 82,
+        ]);
+
+        $this->assertFileExists($outputPath);
+        $this->assertSame('image/webp', mime_content_type($outputPath));
+
+        [$width, $height] = getimagesize($outputPath);
+        $this->assertSame(1400, $width);
+        $this->assertSame(700, $height);
+    }
+
     public function test_product_store_and_update_use_the_shared_image_pipeline(): void
     {
         $this->withoutMiddleware();

@@ -80,72 +80,31 @@ class ImageProcessingService
 
     private function convertToWebp(string $inputPath, string $outputPath, array $options = []): void
     {
-        $maxWidth = max(1, (int) ($options['max_width'] ?? config('image-processing.max_width', 1400)));
-        $maxHeight = max(1, (int) ($options['max_height'] ?? config('image-processing.max_height', 1400)));
-        $quality = $this->normalizeQuality((int) ($options['quality'] ?? config('image-processing.quality', 82)));
-        $timeout = max(1, (int) ($options['timeout'] ?? config('image-processing.timeout', 120)));
-        $nodeBinary = (string) ($options['node_binary'] ?? config('image-processing.node_binary', 'node'));
-        $scriptPaths = array_values(array_filter([
-            (string) config('image-processing.script_path'),
-            (string) config('image-processing.fallback_script_path'),
-        ]));
+        $options['max_width'] = max(1, (int) ($options['max_width'] ?? config('image-processing.max_width', 1400)));
+        $options['max_height'] = max(1, (int) ($options['max_height'] ?? config('image-processing.max_height', 1400)));
+        $options['quality'] = $this->normalizeQuality((int) ($options['quality'] ?? config('image-processing.quality', 82)));
+        $options['timeout'] = max(1, (int) ($options['timeout'] ?? config('image-processing.timeout', 120)));
 
-        if ($scriptPaths === []) {
-            throw new RuntimeException('No image processor scripts are configured.');
-        }
+        $processors = [
+            new \App\Services\Images\Processors\ImagickProcessor(),
+            new \App\Services\Images\Processors\GdProcessor(),
+            new \App\Services\Images\Processors\NodeProcessor(),
+        ];
 
         $failures = [];
 
-        foreach ($scriptPaths as $scriptPath) {
-            if (! File::exists($scriptPath)) {
-                $failures[] = new RuntimeException(sprintf('Image processor script not found: %s', $scriptPath));
+        foreach ($processors as $processor) {
+            if (!$processor->isSupported()) {
                 continue;
             }
 
-            $env = null;
-            if (DIRECTORY_SEPARATOR === '\\') {
-                $systemRoot = getenv('SystemRoot') ?: (getenv('SYSTEMROOT') ?: ($_SERVER['SystemRoot'] ?? ($_SERVER['SYSTEMROOT'] ?? 'C:\\Windows')));
-                $env = [];
-                $sources = [
-                    is_array(getenv()) ? getenv() : [],
-                    $_ENV,
-                    $_SERVER
-                ];
-                foreach ($sources as $source) {
-                    foreach ($source as $key => $value) {
-                        if (is_scalar($value)) {
-                            $env[$key] = (string) $value;
-                        }
-                    }
-                }
-                $env['SystemRoot'] = $systemRoot;
-            }
-
-            $process = new Process([
-                $nodeBinary,
-                $scriptPath,
-                '--input',
-                $inputPath,
-                '--output',
-                $outputPath,
-                '--maxWidth',
-                (string) $maxWidth,
-                '--maxHeight',
-                (string) $maxHeight,
-                '--quality',
-                (string) $quality,
-            ], null, $env);
-
-            $process->setTimeout($timeout);
-
             try {
-                $process->mustRun();
+                $processor->process($inputPath, $outputPath, $options);
                 return;
             } catch (Throwable $throwable) {
-                $message = trim($throwable->getMessage() . ' ' . $process->getErrorOutput());
-
+                $processorName = class_basename($processor);
                 $failures[] = new RuntimeException(
-                    'Image processing failed via ' . basename($scriptPath) . ': ' . $message,
+                    "Image processing failed via {$processorName}: " . $throwable->getMessage(),
                     0,
                     $throwable
                 );
@@ -162,8 +121,8 @@ class ImageProcessingService
 
         throw new RuntimeException(
             $details === ''
-                ? 'Image processing failed for all configured processors.'
-                : 'Image processing failed for all configured processors: ' . $details,
+                ? 'Image processing failed. No supported processors are available or configured.'
+                : 'Image processing failed for all available processors: ' . $details,
             0,
             $failures[0] ?? null
         );
