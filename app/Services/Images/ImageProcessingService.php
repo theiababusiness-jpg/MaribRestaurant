@@ -51,16 +51,24 @@ class ImageProcessingService
         $directory = $this->normalizeDirectory($directory);
         $filename = Str::uuid()->toString() . '.webp';
         $relativePath = $directory . '/' . $filename;
-        $absolutePath = public_path($relativePath);
 
-        $this->ensureDirectory(dirname($absolutePath));
-        $this->convertToWebp($file->getPathname(), $absolutePath, $options);
+        $targetPaths = $this->getPublicDestinationPaths($relativePath);
+        $primaryPath = $targetPaths[0];
 
-        if (! File::exists($absolutePath) || File::size($absolutePath) === 0) {
+        $this->ensureDirectory(dirname($primaryPath));
+        $this->convertToWebp($file->getPathname(), $primaryPath, $options);
+
+        if (! File::exists($primaryPath) || File::size($primaryPath) === 0) {
             throw new RuntimeException('Image processing completed, but the output file was not created.');
         }
 
-        @chmod($absolutePath, 0644);
+        @chmod($primaryPath, 0644);
+
+        foreach (array_slice($targetPaths, 1) as $additionalPath) {
+            $this->ensureDirectory(dirname($additionalPath));
+            File::copy($primaryPath, $additionalPath);
+            @chmod($additionalPath, 0644);
+        }
 
         return $relativePath;
     }
@@ -71,13 +79,33 @@ class ImageProcessingService
             return false;
         }
 
-        $absolutePath = public_path(ltrim($path, '/\\'));
+        $targetPaths = $this->getPublicDestinationPaths($path);
+        $deleted = false;
 
-        if (! File::exists($absolutePath)) {
-            return false;
+        foreach ($targetPaths as $absolutePath) {
+            if (File::exists($absolutePath)) {
+                if (File::delete($absolutePath)) {
+                    $deleted = true;
+                }
+            }
         }
 
-        return File::delete($absolutePath);
+        return $deleted;
+    }
+
+    private function getPublicDestinationPaths(string $relativePath): array
+    {
+        $relativePath = ltrim($relativePath, '/\\');
+        $paths = [
+            public_path($relativePath),
+        ];
+
+        $publicHtmlDir = base_path('../public_html');
+        if (File::isDirectory($publicHtmlDir)) {
+            $paths[] = $publicHtmlDir . '/' . $relativePath;
+        }
+
+        return array_values(array_unique($paths));
     }
 
     private function convertToWebp(string $inputPath, string $outputPath, array $options = []): void
